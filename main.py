@@ -4,10 +4,11 @@ The intent is to automate querying things like users or content to inform certai
 The automod authenticates through arcgis module, and should minimize additional auth methods exposed.
 """
 
-from objects import AutoMod
+from utils import AutoMod
+
 
 def main():
-    pass
+    am = AutoMod()
 
 
 if __name__ == '__main__':
