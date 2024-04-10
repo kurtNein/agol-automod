@@ -28,7 +28,7 @@ class AutoMod:
         with open(output_csv, 'w', encoding='utf-8') as file:
             csvfile = csv.writer(file, delimiter=',', lineterminator='\n')
             csvfile.writerow(
-                ["Userame",  # these are the headers; modify according to whatever properties you want in your report
+                ["Username",  # these are the headers; modify according to whatever properties you want in your report
                  "LastLogOn",
                  "Name",
                  ])
