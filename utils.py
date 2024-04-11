@@ -15,10 +15,58 @@ class AutoMod:
         self._output_csv = ''
         self._GRACE_PERIOD_DAYS: int = 30
 
+    def get_services_in_no_web_maps(self):
+        from arcgis.mapping import WebMap
+
+        services = (self.gis.content.search(query="", item_type="Feature Service", max_items=1000))
+        total_services_queried = len(services)
+        print(services, "\n", f"There are {total_services_queried} of this type")
+
+        # creates list of items of all web maps in active portal
+        web_maps = self.gis.content.search(query="", item_type="Web Map", max_items=1000)
+        print(web_maps)
+
+        # loops through list of webmap items
+        for item in web_maps:
+            # creates a WebMap object from input webmap item
+            web_map = WebMap(item)
+            # accesses basemap layer(s) in WebMap object
+            base_maps = web_map.basemap['baseMapLayers']
+            # accesses layers in WebMap object
+            layers = web_map.layers
+            # loops through basemap layers
+            for bm in base_maps:
+                # tests whether the bm layer has a styleUrl(VTS) or url (everything else)
+                if 'styleUrl' in bm.keys():
+                    for service in services:
+                        if service.url in bm['styleUrl']:
+                            services.remove(service)
+                            print(f"Removed {service}")
+                elif 'url' in bm.keys():
+                    for service in services:
+                        if service.url in bm['url']:
+                            services.remove(service)
+            # loops through layers
+            for layer in layers:
+                # tests whether the layer has a styleUrl(VTS) or url (everything else)
+                if hasattr(layer, 'styleUrl'):
+                    for service in services:
+                        if service.url in layer.styleUrl:
+                            services.remove(service)
+                elif hasattr(layer, 'url'):
+                    for service in services:
+                        if service.url in layer.url:
+                            services.remove(service)
+
+        arcpy.AddMessage('The following services are not used in any web maps:')
+
+        for service in services:
+            arcpy.AddMessage(f"{service.title} : {arcpy.GetActivePortalURL() + r'home/item.html?id=' + service.id}")
+
+        arcpy.AddMessage(f"Of {total_services_queried} services, there are {len(services)} unused in your portal")
+
     def get_inactive_users(self, search_user='*'):
         import csv
-
-        # This is an integer representing days to set the time after which a user is considered inactive.
 
         output_csv = fr'.\outputs\users_inactive_{self._GRACE_PERIOD_DAYS}_days_before_{str(datetime.now())[:9]}.csv'
         search_user = '*'  # change to query individual user
@@ -28,7 +76,7 @@ class AutoMod:
         with open(output_csv, 'w', encoding='utf-8') as file:
             csvfile = csv.writer(file, delimiter=',', lineterminator='\n')
             csvfile.writerow(
-                ["Username",  # these are the headers; modify according to whatever properties you want in your report
+                ["Username",  # these are the headers of the csv
                  "LastLogOn",
                  "Name",
                  ])
@@ -57,4 +105,4 @@ class AutoMod:
 
 
 if __name__ == '__main__':
-    AutoMod().get_inactive_users()
+    AutoMod().get_services_in_no_web_maps()
