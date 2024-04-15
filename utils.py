@@ -121,7 +121,7 @@ class AutoMod:
                         print(f"Working on {item.title}...")
                         result = item.export('sample {}'.format(item.title), download_format)
                         result.download(
-                            f"AGOL_{self.gis.properties.user.lastName}_{time.strftime('%m-%d-%Y', time.localtime())}")
+                            f"AGOL_{self.gis.properties.user.lastName}__{time.strftime('%m-%d-%Y', time.localtime())}")
                         print(f"Processed {item.title}")
                         # Delete the item after it downloads to save on space
                         result.delete()
