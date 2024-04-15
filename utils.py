@@ -1,8 +1,17 @@
+"""
+This file is for the AutoMod class. This class is an object responsible for fetching a local system's ArcGIS portal.
+It can then perform several methods to fetch or save information from that portal.
+Information available is limited to the information available to the current GIS user, handled by ArcGIS authentication.
+"""
+
+
+
 import arcpy
 from arcgis.gis import GIS
 from datetime import datetime, timedelta
 import time
 import csv
+
 
 class AutoMod:
     def __init__(self):
@@ -67,7 +76,6 @@ class AutoMod:
 
     def get_inactive_users(self, search_user='*'):
 
-
         output_csv = fr'.\outputs\users_inactive_{self._GRACE_PERIOD_DAYS}_days_before_{str(datetime.now())[:9]}.csv'
         search_user = '*'  # change to query individual user
         self._output_csv = output_csv
@@ -102,9 +110,7 @@ class AutoMod:
         new_time_struct = new_datetime.timetuple()
         return new_time_struct
 
-    def download_items_locally(self, downloadFormat='File Geodatabase'):
-
-        arcpy.AddMessage("ArcGIS Online Org account")
+    def download_items_locally(self, download_format='File Geodatabase'):
         arcpy.AddMessage("Logged in as " + str(self.gis.properties.user.username))
 
         try:
@@ -119,8 +125,9 @@ class AutoMod:
                 if item.type:
                     try:
                         print(f"Working on {item.title}...")
-                        result = item.export('sample {}'.format(item.title), downloadFormat)
-                        result.download(f"AGOL_{self.gis.properties.user.lastName}_{time.strftime('%m-%d-%Y', time.localtime())}")
+                        result = item.export('sample {}'.format(item.title), download_format)
+                        result.download(
+                            f"AGOL_{self.gis.properties.user.lastName}__{time.strftime('%m-%d-%Y', time.localtime())}")
                         print(f"Processed {item.title}")
                         # Delete the item after it downloads to save on space
                         result.delete()
