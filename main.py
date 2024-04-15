@@ -10,6 +10,7 @@ from utils import AutoMod
 def main():
     am = AutoMod()
     am.get_inactive_users()
+    am.get_services_in_no_web_maps()
 
 
 if __name__ == '__main__':
