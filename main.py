@@ -9,6 +9,7 @@ from utils import AutoMod
 
 def main():
     am = AutoMod()
+    am.get_inactive_users()
 
 
 if __name__ == '__main__':
