@@ -5,7 +5,6 @@ Information available is limited to the information available to the current GIS
 """
 
 
-
 import arcpy
 from arcgis.gis import GIS
 from datetime import datetime, timedelta
