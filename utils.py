@@ -103,8 +103,6 @@ class AutoMod:
         return new_time_struct
 
     def download_items_locally(self, download_format='File Geodatabase'):
-
-        arcpy.AddMessage("ArcGIS Online Org account")
         arcpy.AddMessage("Logged in as " + str(self.gis.properties.user.username))
 
         try:
