@@ -26,15 +26,18 @@ class AutoMod:
     def get_services_in_no_web_maps(self):
         from arcgis.mapping import WebMap
 
+        # We want to create a list of AGOL services and store the results.
         services = (self.gis.content.search(query="", item_type="Feature Service", max_items=1000))
         total_services_queried = len(services)
         print(services, "\n", f"There are {total_services_queried} of this type")
 
-        # creates list of items of all web maps in active portal
+        # We want to specifically search AGOL for the org's Web Maps.
         web_maps = self.gis.content.search(query="", item_type="Web Map", max_items=1000)
         print(web_maps)
 
-        # loops through list of webmap items
+        # We want to go through each Web Map in web_maps.
+        # For each Web Map, every service found in that web map will be removed from our list.
+        # By the end, only services not found in a Web Map will remain in the services list.
         for item in web_maps:
             # creates a WebMap object from input webmap item
             web_map = WebMap(item)
@@ -48,6 +51,7 @@ class AutoMod:
                 if 'styleUrl' in bm.keys():
                     for service in services:
                         if service.url in bm['styleUrl']:
+                            # We want to remove a service from the services list if the url is found here.
                             services.remove(service)
                             print(f"Removed {service}")
                 elif 'url' in bm.keys():
@@ -76,20 +80,20 @@ class AutoMod:
     def get_inactive_users(self, search_user='*'):
 
         output_csv = fr'.\outputs\users_inactive_{self._GRACE_PERIOD_DAYS}_days_before_{str(datetime.now())[:9]}.csv'
-        search_user = '*'  # change to query individual user
+        search_user = '*'
         self._output_csv = output_csv
         user_list = self.gis.users.search(query=search_user, max_users=1000)
 
         with open(output_csv, 'w', encoding='utf-8') as file:
             csvfile = csv.writer(file, delimiter=',', lineterminator='\n')
             csvfile.writerow(
-                ["Username",  # these are the headers of the csv
+                ["Username",  # CSV headers
                  "LastLogOn",
                  "Name",
                  ])
 
             for item in user_list:
-                # Date math is to determine if the user's lastLogin attribute is < the current date minus grace period
+                # Date math is to determine if the user's lastLogin attribute is within the grace period.
                 if item.lastLogin != -1 and time.localtime(item.lastLogin / 1000) < self.get_inactive_date():
                     csvfile.writerow([item.username,  # modify according to whatever properties you want in your report
                                       time.strftime('%m/%d/%Y', time.localtime(item.lastLogin / 1000)),
