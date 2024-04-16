@@ -80,20 +80,20 @@ class AutoMod:
     def get_inactive_users(self, search_user='*'):
 
         output_csv = fr'.\outputs\users_inactive_{self._GRACE_PERIOD_DAYS}_days_before_{str(datetime.now())[:9]}.csv'
-        search_user = '*'  # change to query individual user
+        search_user = '*'
         self._output_csv = output_csv
         user_list = self.gis.users.search(query=search_user, max_users=1000)
 
         with open(output_csv, 'w', encoding='utf-8') as file:
             csvfile = csv.writer(file, delimiter=',', lineterminator='\n')
             csvfile.writerow(
-                ["Username",  # these are the headers of the csv
+                ["Username",  # CSV headers
                  "LastLogOn",
                  "Name",
                  ])
 
             for item in user_list:
-                # Date math is to determine if the user's lastLogin attribute is < the current date minus grace period
+                # Date math is to determine if the user's lastLogin attribute is within the grace period.
                 if item.lastLogin != -1 and time.localtime(item.lastLogin / 1000) < self.get_inactive_date():
                     csvfile.writerow([item.username,  # modify according to whatever properties you want in your report
                                       time.strftime('%m/%d/%Y', time.localtime(item.lastLogin / 1000)),
