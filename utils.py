@@ -26,15 +26,18 @@ class AutoMod:
     def get_services_in_no_web_maps(self):
         from arcgis.mapping import WebMap
 
+        # We want to create a list of AGOL services and store the results.
         services = (self.gis.content.search(query="", item_type="Feature Service", max_items=1000))
         total_services_queried = len(services)
         print(services, "\n", f"There are {total_services_queried} of this type")
 
-        # creates list of items of all web maps in active portal
+        # We want to specifically search AGOL for the org's Web Maps.
         web_maps = self.gis.content.search(query="", item_type="Web Map", max_items=1000)
         print(web_maps)
 
-        # loops through list of webmap items
+        # We want to go through each Web Map in web_maps.
+        # For each Web Map, every service found in that web map will be removed from our list.
+        # By the end, only services not found in a Web Map will remain in the services list.
         for item in web_maps:
             # creates a WebMap object from input webmap item
             web_map = WebMap(item)
@@ -48,6 +51,7 @@ class AutoMod:
                 if 'styleUrl' in bm.keys():
                     for service in services:
                         if service.url in bm['styleUrl']:
+                            # We want to remove a service from the services list if the url is found here.
                             services.remove(service)
                             print(f"Removed {service}")
                 elif 'url' in bm.keys():
