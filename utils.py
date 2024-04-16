@@ -11,8 +11,7 @@ from datetime import datetime, timedelta
 import time
 import csv
 
-def test():
-    pass
+
 class AutoMod:
     def __init__(self):
         try:
