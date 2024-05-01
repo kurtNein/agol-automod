@@ -141,9 +141,8 @@ class AutoMod:
             print(e)
 
     def transfer_content(self, transfer_from_user: str, transfer_to_user: str):
-        pass
         old_user_object = self.gis.users.get(transfer_from_user)
-        print(self.gis.users.get('kcneinstedt@mercercounty.org_mercernj'))
+        print(f'Transferring content to {self.gis.users.get(transfer_to_user).username}')
         user_content = old_user_object.items()
 
         folders = old_user_object.folders
@@ -158,6 +157,10 @@ class AutoMod:
             folder_items = old_user_object.items(folder=folder['title'])
             for item in folder_items:
                 item.reassign_to(transfer_to_user, target_folder=folder['title'])
+
+    def bulk_transfer_content(self, transfer_from_users: list, transfer_to_user: str):
+        for user in transfer_from_users:
+            self.transfer_content(user, transfer_to_user)
 
 
 if __name__ == '__main__':
