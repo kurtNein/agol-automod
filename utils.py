@@ -4,7 +4,6 @@ It can then perform several methods to fetch or save information from that porta
 Information available is limited to the information available to the current GIS user, handled by ArcGIS authentication.
 """
 
-
 import arcpy
 from arcgis.gis import GIS
 from datetime import datetime, timedelta
@@ -21,7 +20,7 @@ class AutoMod:
             print(e)
 
         self._output_csv = ''
-        self._GRACE_PERIOD_DAYS: int = 30
+        self._GRACE_PERIOD_DAYS: int = 60
 
     def get_services_in_no_web_maps(self):
         from arcgis.mapping import WebMap
@@ -141,6 +140,26 @@ class AutoMod:
         except Exception as e:
             print(e)
 
+    def transfer_content(self, transfer_from_user: str, transfer_to_user: str):
+        pass
+        old_user_object = self.gis.users.get(transfer_from_user)
+        print(self.gis.users.get('kcneinstedt@mercercounty.org_mercernj'))
+        user_content = old_user_object.items()
+
+        folders = old_user_object.folders
+        for item in user_content:
+            try:
+                item.reassign_to(transfer_to_user)
+            except Exception as e:
+                print("Item may have been already assigned to the user.")
+
+        for folder in folders:
+            self.gis.content.create_folder(folder['title'], transfer_to_user)
+            folder_items = old_user_object.items(folder=folder['title'])
+            for item in folder_items:
+                item.reassign_to(transfer_to_user, target_folder=folder['title'])
+
 
 if __name__ == '__main__':
-    AutoMod().download_items_locally()
+    am = AutoMod()
+    am.transfer_content("fmitchell@mercercounty.org_mercernj", "kcneinstedt@mercercounty.org_mercernj")
