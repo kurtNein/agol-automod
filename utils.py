@@ -158,6 +158,10 @@ class AutoMod:
             for item in folder_items:
                 item.reassign_to(transfer_to_user, target_folder=folder['title'])
 
+    def bulk_transfer_content(self, transfer_from_users: list, transfer_to_user: str):
+        for user in transfer_from_users:
+            self.transfer_content(user, transfer_to_user)
+
 
 if __name__ == '__main__':
     am = AutoMod()
