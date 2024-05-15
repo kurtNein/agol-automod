@@ -165,4 +165,3 @@ class AutoMod:
 
 if __name__ == '__main__':
     am = AutoMod()
-    am.transfer_content("fmitchell@mercercounty.org_mercernj", "kcneinstedt@mercercounty.org_mercernj")
