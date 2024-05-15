@@ -144,8 +144,8 @@ class AutoMod:
         old_user_object = self.gis.users.get(transfer_from_user)
         print(f'Transferring content to {self.gis.users.get(transfer_to_user).username}')
         user_content = old_user_object.items()
-
         folders = old_user_object.folders
+
         for item in user_content:
             try:
                 item.reassign_to(transfer_to_user)
@@ -165,4 +165,3 @@ class AutoMod:
 
 if __name__ == '__main__':
     am = AutoMod()
-    am.transfer_content("fmitchell@mercercounty.org_mercernj", "kcneinstedt@mercercounty.org_mercernj")
